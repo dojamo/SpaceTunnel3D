@@ -559,9 +559,9 @@ class Tunnel3D():  # THIS SHOULD BE MORE GENERIC, MORE OF A 'GAMEPLAY' CLASS, MA
         self.Player1 = player(0, 0, 0, 1, .015, 10, True, self.xCraft) # create the player; create the Velocity Factor
         self.ModelVector = vector(0, 0, 0)
         self.xScore = 0
-        self.xFontScore = pygame.font.Font(None, 25)
-        self.xFontFrameRate = pygame.font.Font(None, 25)
-        self.xFontInstructions = pygame.font.Font(None, 35)
+        self.xFontScore = pygame.font.Font("PressStart2P-Regular.ttf",24)
+        self.xFontFrameRate = pygame.font.Font("PressStart2P-Regular.ttf", 18)
+        self.xFontInstructions = pygame.font.Font("VT323-Regular.ttf", 35)
         self.xFrameRate = xFrameRate
 
         # self.xScoreSurface = pygame.Surface(80,20)
@@ -580,7 +580,7 @@ class Tunnel3D():  # THIS SHOULD BE MORE GENERIC, MORE OF A 'GAMEPLAY' CLASS, MA
         RectSpacing = self.RectDepth/self.RectCount # this is the gap between rectangles
         
         # Tunnel path variables, x/y/z vectors
-        self.xCurrentVector = (0, 0, 20)
+        self.xCurrentVector = (0, 0, 24)
         self.xTargetVector = (0, 0, 10)
         self.xGravity = (0, 0, 10)
         self.xLastX = 0 # to apply the vector to
@@ -644,7 +644,7 @@ class Tunnel3D():  # THIS SHOULD BE MORE GENERIC, MORE OF A 'GAMEPLAY' CLASS, MA
     def ShowInstructions(self):
         font = self.xFontInstructions
         tmpColour = (255,255,255)
-        xInstructions = "SPACE TUNNEL 3D\r\n\r\nstay in the tunnel 'til nirvana at 10,000\r\n\r\nbest with trackpad or keyboard\r\nmaximize browser window\r\n\r\narrow keys to move\r\nA-forward\r\nZ-backward\r\nR-restart\r\nESC-resume mouse control\r\n\r\ntips:\r\nlook for white rectangle for current depth of craft\r\nuse A to move forward to give yourself more time to react\r\n\r\ngo for a fly outside the tunnel for a different perspective."
+        xInstructions = "SPACE TUNNEL 3D\r\n\r\nstay in the tunnel 'til nirvana at 10,000\r\n\r\nmaximize browser window\r\nIf FPS much less than 50, try using private browsing modes\r\n\r\nmouse, trackpad or arrow keys to move\r\nA-forward\r\nZ-backward\r\nR-restart\r\nESC-resume mouse control\r\n\r\ntips:\r\nlook for white rectangle for current depth of craft\r\nuse A to move forward to give yourself more time to react\r\n\r\ngo for a fly outside the tunnel for a different perspective.\r\nwill deplete your score\r\nzoom forwards and watch the tunnel burn"
         for i, xLine in enumerate(xInstructions.splitlines()):
             text = font.render(xLine, True, tmpColour)
             self.xGamescreen.blit(text, (100, 100 + i * font.get_linesize()))
@@ -717,8 +717,8 @@ class Tunnel3D():  # THIS SHOULD BE MORE GENERIC, MORE OF A 'GAMEPLAY' CLASS, MA
                     ListRect.xShadow = True
                     
                     # check crash zone
-                    if (ListRect.xDepthZ <= self.xCraft.xMagicHexagon.xCentreZ +10 and
-                             ListRect.xDepthZ >= self.xCraft.xMagicHexagon.xCentreZ - 10) :
+                    if (ListRect.xDepthZ <= self.xCraft.xMagicHexagon.xCentreZ +12 and
+                             ListRect.xDepthZ >= self.xCraft.xMagicHexagon.xCentreZ - 12) :
                         # check if crashed    
                         if not ListRect.xLogicalRect.collidepoint(self.xCraft.xMagicHexagon.xCentreX, self.xCraft.xMagicHexagon.xCentreY):
                             ListRect.Crash()
