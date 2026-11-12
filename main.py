@@ -906,6 +906,10 @@ class engine():
             # move all of the rectangles.  Will need to be a loop.
             self.xTunnel.Move_Tunnel()
 
+            # show the actual frame rate (diagnostic)
+            xFps = self.xTunnel.xFontFrameRate.render(str(int(self.xClock.get_fps())) + " fps", True, (140,140,140))
+            self.xGamescreen.blit(xFps, (920, 10))
+
             # Update the display the screen
             pygame.display.flip()
             await(asyncio.sleep(0))
