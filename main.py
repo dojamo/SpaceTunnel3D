@@ -30,9 +30,11 @@ DEFAULT_RECT_HEIGHT = SCREENHEIGHT * 0.6
 # If it's mobile, change to portrait mode
 if sys.platform == "emscripten":
     import platform
+    platform.window.document.body.style.background = "black" # any gaps around the game are black, not grey
     if platform.window.innerHeight > platform.window.innerWidth: # portrait screen
         SCREENWIDTH = 1080
-        SCREENHEIGHT = 1920
+        # match the height to the browser's shape so there are no gaps at the sides
+        SCREENHEIGHT = int(1080 * platform.window.innerHeight / platform.window.innerWidth)
     if platform.window.matchMedia("(pointer: coarse)").matches:
         ISMOBILE = True
     else:
@@ -684,7 +686,7 @@ class Tunnel3D():  # THIS SHOULD BE MORE GENERIC, MORE OF A 'GAMEPLAY' CLASS, MA
             xInstructions = "SPACE TUNNEL 3D\r\n\r\nstay in the tunnel 'til nirvana at 10,000\r\n\r\nmaximize browser window\r\nIf FPS much less than 50,\r\ntry using private browsing modes\r\n\r\nmouse, trackpad or arrow keys to move\r\nA-forward\r\nZ-backward\r\nR-restart\r\nESC-resume mouse control\r\n\r\ntips:\r\nlook for white rectangle for current depth of craft\r\nuse A to move forward to give yourself more time to react\r\n\r\ngo for a fly outside the tunnel\r\nfor a different perspective.\r\nwill deplete your score\r\nzoom forwards and watch the tunnel burn"
         for i, xLine in enumerate(xInstructions.splitlines()):
             text = font.render(xLine, True, tmpColour)
-            self.xGamescreen.blit(text, (100, 100 + i * font.get_linesize()))
+            self.xGamescreen.blit(text, (25, 100 + i * font.get_linesize()))
 
 #    def ShowFrameRate(self):
 #        font = self.xFontFrameRate
