@@ -567,6 +567,18 @@ class Tunnel3D():  # THIS SHOULD BE MORE GENERIC, MORE OF A 'GAMEPLAY' CLASS, MA
         self.init_tunnel() # initiate the tunnels
 #        self.xQuitButton  = xQuitButton
         self.xZoomBar  = xZoomBar
+
+        # translucent up/down arrows for the zoom bar (mobile only)
+        self.xZoomArrows = pygame.Surface((xZoomBar.width, SCREENHEIGHT), pygame.SRCALPHA)  # see-through layer
+        xArrowColour = (110, 110, 110, 140)   # grey, last number = opacity (0 invisible - 255 solid)
+        xMid = xZoomBar.width // 2            # centre of the bar
+        xHalf = xZoomBar.width // 3           # half the arrow size
+        xUpY = SCREENHEIGHT // 3              # 1/3 of the way down
+        xDownY = SCREENHEIGHT * 2 // 3        # 2/3 of the way down
+        pygame.draw.polygon(self.xZoomArrows, xArrowColour,
+                            [(xMid, xUpY - xHalf), (xMid - xHalf, xUpY + xHalf), (xMid + xHalf, xUpY + xHalf)])
+        pygame.draw.polygon(self.xZoomArrows, xArrowColour,
+                            [(xMid, xDownY + xHalf), (xMid - xHalf, xDownY - xHalf), (xMid + xHalf, xDownY - xHalf)])
         
         # Player: x, y, z, VelocityFactor, Friction, CircleSize):
         self.dummyobject = dummyobject() # 974
@@ -660,7 +672,10 @@ class Tunnel3D():  # THIS SHOULD BE MORE GENERIC, MORE OF A 'GAMEPLAY' CLASS, MA
     def ShowInstructions(self):
         font = self.xFontInstructions
         tmpColour = (255,255,255)
-        xInstructions = "SPACE TUNNEL 3D\r\n\r\nstay in the tunnel 'til nirvana at 10,000\r\n\r\nmaximize browser window\r\nIf FPS much less than 50,\r\ntry using private browsing modes\r\n\r\nmouse, trackpad or arrow keys to move\r\nA-forward\r\nZ-backward\r\nR-restart\r\nESC-resume mouse control\r\n\r\ntips:\r\nlook for white rectangle for current depth of craft\r\nuse A to move forward to give yourself more time to react\r\n\r\ngo for a fly outside the tunnel\r\nfor a different perspective.\r\nwill deplete your score\r\nzoom forwards and watch the tunnel burn"
+        if ISMOBILE:
+            xInstructions = "SPACE TUNNEL 3D\r\n\r\nstay in the tunnel 'til nirvana at 10,000\r\n\r\ndrag anywhere to move\r\ndrag up/down in the dark bar on the left:\r\n  up - forward\r\n  down - backward\r\nreload the page to restart\r\n\r\ntips:\r\nlook for white rectangle for current depth of craft\r\nmove forward to give yourself more time to react\r\n\r\ngo for a fly outside the tunnel\r\nfor a different perspective.\r\nwill deplete your score\r\nzoom forwards and watch the tunnel burn"
+        else:
+            xInstructions = "SPACE TUNNEL 3D\r\n\r\nstay in the tunnel 'til nirvana at 10,000\r\n\r\nmaximize browser window\r\nIf FPS much less than 50,\r\ntry using private browsing modes\r\n\r\nmouse, trackpad or arrow keys to move\r\nA-forward\r\nZ-backward\r\nR-restart\r\nESC-resume mouse control\r\n\r\ntips:\r\nlook for white rectangle for current depth of craft\r\nuse A to move forward to give yourself more time to react\r\n\r\ngo for a fly outside the tunnel\r\nfor a different perspective.\r\nwill deplete your score\r\nzoom forwards and watch the tunnel burn"
         for i, xLine in enumerate(xInstructions.splitlines()):
             text = font.render(xLine, True, tmpColour)
             self.xGamescreen.blit(text, (100, 100 + i * font.get_linesize()))
@@ -701,6 +716,7 @@ class Tunnel3D():  # THIS SHOULD BE MORE GENERIC, MORE OF A 'GAMEPLAY' CLASS, MA
         
         if ISMOBILE:
             pygame.draw.rect(self.xGamescreen, (20, 20, 20), self.xZoomBar, 0)
+            self.xGamescreen.blit(self.xZoomArrows, (self.xZoomBar.left, 0))
 #        pygame.draw.rect(self.xGamescreen, (50, 20, 20), self.xQuitButton, 0)
 
         # HANDLE OBJECT MOVEMENT
@@ -820,7 +836,7 @@ class engine():
         self.xClock = pygame.time.Clock()
         
         # create a zoom bar on the left, only used on mobile.
-        self.xZoomBar = pygame.Rect(0, 70, 70, SCREENHEIGHT - 0)
+        self.xZoomBar = pygame.Rect(0, 0, 140, SCREENHEIGHT - 0)
 
 #        self.xQuitButton = pygame.Rect(0, 0, 70, 70)
         
@@ -866,7 +882,9 @@ class engine():
                 xMouseX, xMouseY = pygame.mouse.get_pos()
 
                 if ISMOBILE and self.xZoomBar.collidepoint(xMouseX, xMouseY):                    
-                    self.xTunnel.xCraft.MoveObject(0, 0, xMouseMovementY*-4)
+                    xRequestedZoom  = xMouseMovementY*-4
+                    if xRequestedZoom > 0 or self.xTunnel.xCraft.xMagicHexagon.xCentreZ + xRequestedZoom > 60:
+                        self.xTunnel.xCraft.MoveObject(0, 0, xRequestedZoom)
                 else:
                     self.xTunnel.ModelVector.vx += xMouseMovementX * self.xMouseScaler
                     self.xTunnel.ModelVector.vy += xMouseMovementY * self.xMouseScaler
