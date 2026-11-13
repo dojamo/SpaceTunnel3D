@@ -22,6 +22,13 @@ from pygame.rect import *
 
 SCREENWIDTH = 1920  # hardcoded to surface 4
 SCREENHEIGHT = 1080 # hardcoded to surface 4
+# If it's mobile, change to portrait mode
+if sys.platform == "emscripten":
+    import platform
+    if platform.window.innerHeight > platform.window.innerWidth: # portrait screen
+        SCREENWIDTH = 1080
+        SCREENHEIGHT = 1920
+
 ORIGINX = SCREENWIDTH / 2
 ORIGINY = SCREENHEIGHT / 2
 DEFAULT_RECT_WIDTH = SCREENWIDTH * 0.6
@@ -561,7 +568,7 @@ class Tunnel3D():  # THIS SHOULD BE MORE GENERIC, MORE OF A 'GAMEPLAY' CLASS, MA
         self.xScore = 0
         self.xFontScore = pygame.font.Font("PressStart2P-Regular.ttf",24)
         self.xFontFrameRate = pygame.font.Font("PressStart2P-Regular.ttf", 18)
-        self.xFontInstructions = pygame.font.Font("VT323-Regular.ttf", 35)
+        self.xFontInstructions = pygame.font.Font("VT323-Regular.ttf", 30)
         self.xFrameRate = xFrameRate
 
         # self.xScoreSurface = pygame.Surface(80,20)
@@ -639,12 +646,12 @@ class Tunnel3D():  # THIS SHOULD BE MORE GENERIC, MORE OF A 'GAMEPLAY' CLASS, MA
         if self.xScore == 0 : tmpColour = (150, 0, 0)
         else : tmpColour = (100, 200, 100)
         text = font.render(str(int(self.xScore)), True, tmpColour)
-        self.xGamescreen.blit(text,(SCREENWIDTH - 100, 10))
+        self.xGamescreen.blit(text,(SCREENWIDTH - 150, 10))
 
     def ShowInstructions(self):
         font = self.xFontInstructions
         tmpColour = (255,255,255)
-        xInstructions = "SPACE TUNNEL 3D\r\n\r\nstay in the tunnel 'til nirvana at 10,000\r\n\r\nmaximize browser window\r\nIf FPS much less than 50, try using private browsing modes\r\n\r\nmouse, trackpad or arrow keys to move\r\nA-forward\r\nZ-backward\r\nR-restart\r\nESC-resume mouse control\r\n\r\ntips:\r\nlook for white rectangle for current depth of craft\r\nuse A to move forward to give yourself more time to react\r\n\r\ngo for a fly outside the tunnel for a different perspective.\r\nwill deplete your score\r\nzoom forwards and watch the tunnel burn"
+        xInstructions = "SPACE TUNNEL 3D\r\n\r\nstay in the tunnel 'til nirvana at 10,000\r\n\r\nmaximize browser window\r\nIf FPS much less than 50,\r\ntry using private browsing modes\r\n\r\nmouse, trackpad or arrow keys to move\r\nA-forward\r\nZ-backward\r\nR-restart\r\nESC-resume mouse control\r\n\r\ntips:\r\nlook for white rectangle for current depth of craft\r\nuse A to move forward to give yourself more time to react\r\n\r\ngo for a fly outside the tunnel\r\nfor a different perspective.\r\nwill deplete your score\r\nzoom forwards and watch the tunnel burn"
         for i, xLine in enumerate(xInstructions.splitlines()):
             text = font.render(xLine, True, tmpColour)
             self.xGamescreen.blit(text, (100, 100 + i * font.get_linesize()))
@@ -808,7 +815,7 @@ class engine():
         
         # Create the tunnel
         self.xMoveAmount = .4 # distance to move per key press.
-        self.xFrameRate = 120 # assumed frame rate, user controllable later
+        self.xFrameRate = 60 # Max frame rate. User control currently commented out.
         self.xMoveAmount2 = 10
         self.xAccelerate = 0
         self.xMouseScaler = .2
@@ -830,14 +837,14 @@ class engine():
                 if event.key ==  K_r:
                     self.restart()
                     
-                if event.key in (K_EQUALS, K_KP_PLUS):
-                    if self.xFrameRate < 180 :
-                        self.xFrameRate += 20
-                        self.xTunnel.xFrameRate = self.xFrameRate
-                if event.key in (K_MINUS, K_KP_MINUS):                    
-                    if self.xFrameRate > 60 :
-                        self.xFrameRate -= 20
-                        self.xTunnel.xFrameRate = self.xFrameRate
+#                if event.key in (K_EQUALS, K_KP_PLUS):
+#                    if self.xFrameRate < 180 :
+#                        self.xFrameRate += 20
+#                        self.xTunnel.xFrameRate = self.xFrameRate
+#                if event.key in (K_MINUS, K_KP_MINUS):                    
+#                    if self.xFrameRate > 60 :
+#                        self.xFrameRate -= 20
+#                        self.xTunnel.xFrameRate = self.xFrameRate
                         
                 if event.key == K_ESCAPE:
                     pygame.event.set_grab(False)
@@ -908,7 +915,7 @@ class engine():
 
             # show the actual frame rate (diagnostic)
             xFps = self.xTunnel.xFontFrameRate.render(str(int(self.xClock.get_fps())) + " fps", True, (140,140,140))
-            self.xGamescreen.blit(xFps, (920, 10))
+            self.xGamescreen.blit(xFps, ((SCREENWIDTH // 2) - 10, 10))
 
             # Update the display the screen
             pygame.display.flip()
