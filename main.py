@@ -570,11 +570,11 @@ class Tunnel3D():  # THIS SHOULD BE MORE GENERIC, MORE OF A 'GAMEPLAY' CLASS, MA
 
         # translucent up/down arrows for the zoom bar (mobile only)
         self.xZoomArrows = pygame.Surface((xZoomBar.width, SCREENHEIGHT), pygame.SRCALPHA)  # see-through layer
-        xArrowColour = (110, 110, 110, 140)   # grey, last number = opacity (0 invisible - 255 solid)
+        xArrowColour = (80, 80, 80, 140)      # grey, last number = opacity (0 invisible - 255 solid)
         xMid = xZoomBar.width // 2            # centre of the bar
-        xHalf = xZoomBar.width // 3           # half the arrow size
-        xUpY = SCREENHEIGHT // 3              # 1/3 of the way down
-        xDownY = SCREENHEIGHT * 2 // 3        # 2/3 of the way down
+        xHalf = xZoomBar.width // 6           # half the arrow size
+        xUpY = SCREENHEIGHT // 5              # 20% of the way down
+        xDownY = SCREENHEIGHT * 4 // 5        # 80% of the way down
         pygame.draw.polygon(self.xZoomArrows, xArrowColour,
                             [(xMid, xUpY - xHalf), (xMid - xHalf, xUpY + xHalf), (xMid + xHalf, xUpY + xHalf)])
         pygame.draw.polygon(self.xZoomArrows, xArrowColour,
@@ -589,7 +589,10 @@ class Tunnel3D():  # THIS SHOULD BE MORE GENERIC, MORE OF A 'GAMEPLAY' CLASS, MA
         self.xScore = 0
         self.xFontScore = pygame.font.Font("PressStart2P-Regular.ttf",24)
         self.xFontFrameRate = pygame.font.Font("PressStart2P-Regular.ttf", 18)
-        self.xFontInstructions = pygame.font.Font("VT323-Regular.ttf", 30)
+        if ISMOBILE:
+            self.xFontInstructions = pygame.font.Font("VT323-Regular.ttf", 45)
+        else:
+            self.xFontInstructions = pygame.font.Font("VT323-Regular.ttf", 30)
         self.xFrameRate = xFrameRate
 
         # self.xScoreSurface = pygame.Surface(80,20)
