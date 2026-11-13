@@ -903,6 +903,14 @@ class engine():
                 pygame.event.set_grab(False)
                 pygame.event.set_grab(True)
                 pygame.mouse.set_visible(False)
+                # on mobile, ask the browser for full screen (hides the URL bar)
+                # try/except because some browsers (e.g. iPhone Safari) don't support it
+                if ISMOBILE:
+                    try:
+                        if not platform.window.document.fullscreenElement:
+                            platform.window.document.documentElement.requestFullscreen()
+                    except Exception:
+                        pass
 
 # Touchscreen only
 #            if ISMOBILE:
