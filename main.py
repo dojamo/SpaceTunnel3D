@@ -587,6 +587,7 @@ class Tunnel3D():  # THIS SHOULD BE MORE GENERIC, MORE OF A 'GAMEPLAY' CLASS, MA
         self.Player1 = player(0, 0, 0, 1, .015, 10, True, self.xCraft) # create the player; create the Velocity Factor
         self.ModelVector = vector(0, 0, 0)
         self.xScore = 0
+        self.xScoreFalling = False
         self.xFontScore = pygame.font.Font("PressStart2P-Regular.ttf",24)
         self.xFontFrameRate = pygame.font.Font("PressStart2P-Regular.ttf", 18)
         if ISMOBILE:
@@ -667,8 +668,10 @@ class Tunnel3D():  # THIS SHOULD BE MORE GENERIC, MORE OF A 'GAMEPLAY' CLASS, MA
     def ShowScore(self):
 
         font = self.xFontScore
-        if self.xScore == 0 : tmpColour = (150, 0, 0)
-        else : tmpColour = (100, 200, 100)
+        if self.xScoreFalling:
+            tmpColour = (150, 0, 0)
+        else:
+            tmpColour = (100, 200, 100)
         text = font.render(str(int(self.xScore)), True, tmpColour)
         self.xGamescreen.blit(text,(SCREENWIDTH - 150, 10))
 
@@ -760,8 +763,11 @@ class Tunnel3D():  # THIS SHOULD BE MORE GENERIC, MORE OF A 'GAMEPLAY' CLASS, MA
                             ListRect.Crash()
                             ListRect.xShadow = False
                             self.xScore -=1.2
+                            self.xScoreFalling = True
                             if self.xScore < 0 : self.xScore = 0
-                        else : self.xScore += 1.5  #.4
+                        else : 
+                            self.xScore += 1.5  #.4
+                            self.xScoreFalling = False
                 else : ListRect.xShadow = False
 
             ListRect.TransformRect(self.Camera1) 
