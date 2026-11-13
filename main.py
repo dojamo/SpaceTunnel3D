@@ -22,17 +22,26 @@ from pygame.rect import *
 
 SCREENWIDTH = 1920  # hardcoded to surface 4
 SCREENHEIGHT = 1080 # hardcoded to surface 4
+
+# these are set based on a landscape screen, it just gives better gameplay regardless of orientation
+DEFAULT_RECT_WIDTH = SCREENWIDTH * 0.6
+DEFAULT_RECT_HEIGHT = SCREENHEIGHT * 0.6
+
 # If it's mobile, change to portrait mode
 if sys.platform == "emscripten":
     import platform
     if platform.window.innerHeight > platform.window.innerWidth: # portrait screen
         SCREENWIDTH = 1080
         SCREENHEIGHT = 1920
+    if platform.window.matchMedia("(pointer: coarse)").matches:
+        ISMOBILE = True
+    else:
+        ISMOBILE = False  
+else:
+    ISMOBILE = False
 
 ORIGINX = SCREENWIDTH / 2
 ORIGINY = SCREENHEIGHT / 2
-DEFAULT_RECT_WIDTH = SCREENWIDTH * 0.6
-DEFAULT_RECT_HEIGHT = SCREENHEIGHT * 0.6
 K_NUMERATOR = 768
 
 ##############################################################################
@@ -553,11 +562,11 @@ class dummyobject():
     pass
 
 class Tunnel3D():  # THIS SHOULD BE MORE GENERIC, MORE OF A 'GAMEPLAY' CLASS, MAYBE.
-    def __init__(self, xGamescreen, xFrameRate): # xQuitButton, xZoomBar
+    def __init__(self, xGamescreen, xFrameRate, xZoomBar): # xQuitButton, 
         self.xGamescreen = xGamescreen
         self.init_tunnel() # initiate the tunnels
 #        self.xQuitButton  = xQuitButton
-#        self.xZoomBar  = xZoomBar
+        self.xZoomBar  = xZoomBar
         
         # Player: x, y, z, VelocityFactor, Friction, CircleSize):
         self.dummyobject = dummyobject() # 974
@@ -690,7 +699,8 @@ class Tunnel3D():  # THIS SHOULD BE MORE GENERIC, MORE OF A 'GAMEPLAY' CLASS, MA
         
     # FULL SCREEN CONTROLS
         
-#        pygame.draw.rect(self.xGamescreen, (20, 20, 20), self.xZoomBar, 0)
+        if ISMOBILE:
+            pygame.draw.rect(self.xGamescreen, (20, 20, 20), self.xZoomBar, 0)
 #        pygame.draw.rect(self.xGamescreen, (50, 20, 20), self.xQuitButton, 0)
 
         # HANDLE OBJECT MOVEMENT
@@ -732,7 +742,7 @@ class Tunnel3D():  # THIS SHOULD BE MORE GENERIC, MORE OF A 'GAMEPLAY' CLASS, MA
                             ListRect.xShadow = False
                             self.xScore -=1.2
                             if self.xScore < 0 : self.xScore = 0
-                        else : self.xScore +=  1  #.4
+                        else : self.xScore += 1.5  #.4
                 else : ListRect.xShadow = False
 
             ListRect.TransformRect(self.Camera1) 
@@ -809,8 +819,9 @@ class engine():
         pygame.display.set_caption("Space Tunnel")
         self.xClock = pygame.time.Clock()
         
-        # create a zoom bar on the left, Touchscreen only
-#        self.xZoomBar = pygame.Rect(0, 70, 70, SCREENHEIGHT - 0)
+        # create a zoom bar on the left, only used on mobile.
+        self.xZoomBar = pygame.Rect(0, 70, 70, SCREENHEIGHT - 0)
+
 #        self.xQuitButton = pygame.Rect(0, 0, 70, 70)
         
         # Create the tunnel
@@ -820,12 +831,12 @@ class engine():
         self.xAccelerate = 0
         self.xMouseScaler = .2
 #        self.xTunnel = Tunnel3D(self.xGamescreen, self.xQuitButton, self.xZoomBar, self.xFrameRate)
-        self.xTunnel = Tunnel3D(self.xGamescreen, self.xFrameRate)
+        self.xTunnel = Tunnel3D(self.xGamescreen, self.xFrameRate, self.xZoomBar)
 
     # restart
     def restart(self):
 #        self.xTunnel = Tunnel3D(self.xGamescreen, self.xQuitButton, self.xZoomBar, self.xFrameRate)
-        self.xTunnel = Tunnel3D(self.xGamescreen, self.xFrameRate)
+        self.xTunnel = Tunnel3D(self.xGamescreen, self.xFrameRate, self.xZoomBar)
 
     # event loop
     def event_loop(self):
@@ -852,10 +863,13 @@ class engine():
                         
             if event.type == pygame.MOUSEMOTION:
                 xMouseMovementX, xMouseMovementY = pygame.mouse.get_rel()
-#                xMouseX, xMouseY = pygame.mouse.get_pos()
+                xMouseX, xMouseY = pygame.mouse.get_pos()
 
-                self.xTunnel.ModelVector.vx += xMouseMovementX * self.xMouseScaler
-                self.xTunnel.ModelVector.vy += xMouseMovementY * self.xMouseScaler
+                if ISMOBILE and self.xZoomBar.collidepoint(xMouseX, xMouseY):                    
+                    self.xTunnel.xCraft.MoveObject(0, 0, xMouseMovementY*-4)
+                else:
+                    self.xTunnel.ModelVector.vx += xMouseMovementX * self.xMouseScaler
+                    self.xTunnel.ModelVector.vy += xMouseMovementY * self.xMouseScaler
 
 # Any mouse click will return the mouse                            
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -864,8 +878,9 @@ class engine():
                 pygame.mouse.set_visible(False)
 
 # Touchscreen only
-#            if self.xZoomBar.collidepoint(xMouseX, xMouseY):                    
-#                    self.xTunnel.xCraft.MoveObject(0, 0, xMouseMovementY*-4)
+#            if ISMOBILE:
+#               if self.xZoomBar.collidepoint(xMouseX, xMouseY):                    
+#                   self.xTunnel.xCraft.MoveObject(0, 0, xMouseMovementY*-4)
 #                else:
 #            if event.type == pygame.MOUSEBUTTONDOWN:
 #                if self.xQuitButton.collidepoint(event.pos):
@@ -888,18 +903,7 @@ class engine():
             if self.xTunnel.xCraft.xMagicHexagon.xCentreZ > 60 : 
                 self.xTunnel.xCraft.MoveObject(0, 0, -self.xMoveAmount2)
 
-#        keys=pygame.key.get_pressed()
- #       if keys[K_LEFT]: self.xTunnel.Camera1.x -= self.xMoveAmount
-   #     if keys[K_RIGHT]: self.xTunnel.Camera1.x += self.xMoveAmount
-  #      if keys[K_DOWN]: self.xTunnel.Camera1.y -= self.xMoveAmount
-    #    if keys[K_UP]: self.xTunnel.Camera1.y += self.xMoveAmount        
- #       xMouseX, xMouseY = pygame.mouse.get_pos()
- #       self.xTunnel.Camera1.x = xMouseX - ORIGINX
-  #      self.xTunnel.Camera1.y = xMouseY - ORIGINY
 
-
-#    def render():
-         # should we split out drawing some how?
 
     # run game
     async def main_loop(self):
