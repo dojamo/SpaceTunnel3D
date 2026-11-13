@@ -679,7 +679,7 @@ class Tunnel3D():  # THIS SHOULD BE MORE GENERIC, MORE OF A 'GAMEPLAY' CLASS, MA
         font = self.xFontInstructions
         tmpColour = (255,255,255)
         if ISMOBILE:
-            xInstructions = "SPACE TUNNEL 3D\r\n\r\nstay in the tunnel 'til nirvana at 10,000\r\n\r\ndrag anywhere to move\r\ndrag up/down in the dark bar on the left:\r\n  up - forward\r\n  down - backward\r\nreload the page to restart\r\n\r\ntips:\r\nlook for white rectangle for current depth of craft\r\nmove forward to give yourself more time to react\r\n\r\ngo for a fly outside the tunnel\r\nfor a different perspective.\r\nwill deplete your score\r\nzoom forwards and watch the tunnel burn"
+            xInstructions = "SPACE TUNNEL 3D\r\n\r\nstay in the tunnel 'til nirvana at 10,000\r\n\r\ndrag anywhere to move\r\ndrag up/down in the bar on the right:\r\n  up - forward\r\n  down - backward\r\nreload the page to restart\r\n\r\ntips:\r\nlook for white rectangle for current depth of craft\r\nmove forward to give yourself more time to react\r\n\r\ngo for a fly outside the tunnel\r\nfor a different perspective.\r\nwill deplete your score\r\nzoom forwards and watch the tunnel burn"
         else:
             xInstructions = "SPACE TUNNEL 3D\r\n\r\nstay in the tunnel 'til nirvana at 10,000\r\n\r\nmaximize browser window\r\nIf FPS much less than 50,\r\ntry using private browsing modes\r\n\r\nmouse, trackpad or arrow keys to move\r\nA-forward\r\nZ-backward\r\nR-restart\r\nESC-resume mouse control\r\n\r\ntips:\r\nlook for white rectangle for current depth of craft\r\nuse A to move forward to give yourself more time to react\r\n\r\ngo for a fly outside the tunnel\r\nfor a different perspective.\r\nwill deplete your score\r\nzoom forwards and watch the tunnel burn"
         for i, xLine in enumerate(xInstructions.splitlines()):
@@ -845,7 +845,7 @@ class engine():
         self.xClock = pygame.time.Clock()
         
         # create a zoom bar on the left, only used on mobile.
-        self.xZoomBar = pygame.Rect(0, 0, 140, SCREENHEIGHT - 0)
+        self.xZoomBar = pygame.Rect(SCREENWIDTH - 140, 0, 140, SCREENHEIGHT - 0)
 
 #        self.xQuitButton = pygame.Rect(0, 0, 70, 70)
         
@@ -903,14 +903,6 @@ class engine():
                 pygame.event.set_grab(False)
                 pygame.event.set_grab(True)
                 pygame.mouse.set_visible(False)
-                # on mobile, ask the browser for full screen (hides the URL bar)
-                # try/except because some browsers (e.g. iPhone Safari) don't support it
-                if ISMOBILE:
-                    try:
-                        if not platform.window.document.fullscreenElement:
-                            platform.window.document.documentElement.requestFullscreen()
-                    except Exception:
-                        pass
 
 # Touchscreen only
 #            if ISMOBILE:
